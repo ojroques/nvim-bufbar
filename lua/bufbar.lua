@@ -1,4 +1,3 @@
--- nvim-bufbar
 -- By Olivier Roques
 -- github.com/ojroques
 
@@ -10,8 +9,12 @@ local M = {}
 
 -------------------- OPTIONS -------------------------------
 M.options = {
-  modifier = ':t',    -- the bufname modifier
-  theme = 'default',  -- the theme from lua/bufbar/themes to use
+  theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
+  counters = true,         -- show buffer counters (listed, modified, terminal)
+  show_alternate = false,  -- show alternate buffer
+  modifier = ':t',         -- the buffer name modifier
+  separator = '|',         -- the buffer separator
+  spacer = true,           -- space the buffer list and buffer counters
 }
 
 -------------------- HELPERS ----------------------------
@@ -33,8 +36,9 @@ end
 local function get_buffers()
   local buffers = {}
   local current_bufnr, alternate_bufnr = fn.bufnr(), fn.bufnr('#')
+  local last_timestamp, last_buffer
   for _, bufinfo in ipairs(fn.getbufinfo({buflisted = 1})) do
-    table.insert(buffers, {
+    local buffer = {
       bufnr = bufinfo.bufnr,
       current = bufinfo.bufnr == current_bufnr,
       alternate = bufinfo.bufnr == alternate_bufnr,
@@ -42,12 +46,30 @@ local function get_buffers()
       modified = fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
       readonly = fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
       terminal = fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
-    })
+    }
+    if not last_timestamp or bufinfo.lastused > last_timestamp then
+      last_timestamp, last_buffer = bufinfo.lastused, buffer
+    end
+    table.insert(buffers, buffer)
+  end
+  if fn.buflisted(current_bufnr) == 0 then
+    last_buffer.current = true
   end
   return buffers
 end
 
 local function get_counters()
+  local counters = {listed = 0, modified = 0, terminal = 0}
+  for _, bufinfo in ipairs(fn.getbufinfo({buflisted = 1})) do
+    counters.listed = counters.listed + 1
+    if fn.getbufvar(bufinfo.bufnr, '&modified') == 1 then
+      counters.modified = counters.modified + 1
+    end
+    if fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal' then
+      counters.terminal = counters.terminal + 1
+    end
+  end
+  return counters
 end
 
 local function get_flags(buffer)
@@ -75,7 +97,7 @@ local function get_name(buffer)
     else
       name = fmt('%d: %s %s', buffer.bufnr, bufname, flags)
     end
-  elseif buffer.alternate then
+  elseif M.options.show_alternate and buffer.alternate then
     name = fmt('%d (#)', buffer.bufnr)
   else
     name = fmt('%d', buffer.bufnr)
@@ -85,9 +107,8 @@ end
 
 function M.build_bufferline()
   local buffers = get_buffers()
-  local counters = get_counters(buffers)
-  local separator = set_hlgroup('|', 'separator', 'conceal')
-  local buflist = {}
+  local bufferline, buflist = {}, {}
+  local separator, spacer
   for _, buffer in ipairs(buffers) do
     local bufname = fmt(' %s ', get_name(buffer))
     local class, level = 'listed', 'low'
@@ -96,7 +117,23 @@ function M.build_bufferline()
     level = buffer.current and 'high' or level
     table.insert(buflist, set_hlgroup(bufname, class, level))
   end
-  return table.concat(buflist, separator)
+  separator = set_hlgroup(M.options.separator, 'separator', 'low')
+  table.insert(bufferline, table.concat(buflist, separator))
+  if M.options.spacer then
+    spacer = set_hlgroup('%=', 'separator', 'low')
+    table.insert(bufferline, spacer)
+  end
+  if M.options.counters then
+    local counters = get_counters()
+    local bufcounters = {
+      set_hlgroup(fmt(' L:%d ', counters.listed), 'listed', 'med'),
+      set_hlgroup(fmt(' M:%d ', counters.modified), 'modified', 'med'),
+      set_hlgroup(fmt(' T:%d ', counters.terminal), 'terminal', 'med'),
+    }
+    separator = set_hlgroup(M.options.separator, 'separator', 'med')
+    table.insert(bufferline, table.concat(bufcounters, separator))
+  end
+  return table.concat(bufferline)
 end
 
 -------------------- SETUP -----------------------------

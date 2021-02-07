@@ -32,7 +32,14 @@ lua require('bufbar').setup {}
 You can pass options to the `setup()` function. Here are all available options
 with their default settings:
 ```lua
-require('bufbar').setup {}
+require('bufbar').setup {
+  theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
+  counters = true,         -- show buffer counters (listed, modified, terminal)
+  show_alternate = false,  -- show alternate buffer
+  modifier = ':t',         -- the buffer name modifier
+  separator = '|',         -- the buffer separator
+  spacer = true,           -- space the buffer list and buffer counters
+}
 ```
 
 ## License
