@@ -12,7 +12,7 @@ M.options = {
   theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
   counters = true,         -- show buffer counters (listed, modified, terminal)
   show_alternate = false,  -- show alternate buffer
-  modifier = ':t',         -- the buffer name modifier
+  modifier = ':~:.',       -- the buffer name modifier
   separator = '|',         -- the buffer separator
   spacer = true,           -- space the buffer list and buffer counters
 }
@@ -89,7 +89,7 @@ end
 local function get_name(buffer)
   local name
   if buffer.current then
-    local modifier = M.options.modifier or ':t'
+    local modifier = (buffer.terminal and ':t') or (M.options.modifier or ':t')
     local bufname = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
     local flags = get_flags(buffer)
     if flags == '' then
