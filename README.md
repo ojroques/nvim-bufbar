@@ -34,11 +34,11 @@ with their default settings:
 ```lua
 require('bufbar').setup {
   theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
-  counters = true,         -- show buffer counters (listed, modified, terminal)
+  counters = true,         -- show buffer counters ([L]isted, [M]odified, [T]erminal)
+  show_bufname = false,    -- show buffer name instead of buffer number
   show_alternate = false,  -- show alternate buffer
-  modifier = ':t',         -- the buffer name modifier
+  modifier = ':~:.',       -- the buffer name modifier
   separator = '|',         -- the buffer separator
-  spacer = true,           -- space the buffer list and buffer counters
 }
 ```
 
