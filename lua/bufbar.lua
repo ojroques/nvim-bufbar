@@ -11,10 +11,10 @@ local M = {}
 M.options = {
   theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
   counters = true,         -- show buffer counters (listed, modified, terminal)
+  show_bufname = false,    -- show buffer name instead of buffer number
   show_alternate = false,  -- show alternate buffer
   modifier = ':~:.',       -- the buffer name modifier
   separator = '|',         -- the buffer separator
-  spacer = true,           -- space the buffer list and buffer counters
 }
 
 -------------------- HELPERS ----------------------------
@@ -88,7 +88,7 @@ end
 
 local function get_name(buffer)
   local name
-  if buffer.current then
+  if M.options.show_bufname or buffer.current then
     local modifier = (buffer.terminal and ':t') or (M.options.modifier or ':t')
     local bufname = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
     local flags = get_flags(buffer)
@@ -119,10 +119,8 @@ function M.build_bufferline()
   end
   separator = set_hlgroup(M.options.separator, 'separator', 'low')
   table.insert(bufferline, table.concat(buflist, separator))
-  if M.options.spacer then
-    spacer = set_hlgroup('%=', 'separator', 'low')
-    table.insert(bufferline, spacer)
-  end
+  spacer = set_hlgroup('%=%<', 'separator', 'low')
+  table.insert(bufferline, spacer)
   if M.options.counters then
     local counters = get_counters()
     local bufcounters = {
