@@ -33,26 +33,32 @@ local function set_hlgroup(text, class, level)
 end
 
 -------------------- BUFFERLINE ------------------------
+local function is_excluded(bufnr)
+  return fn.buflisted(bufnr) == 0 or fn.getbufvar(bufnr, '&filetype') == 'qf'
+end
+
 local function get_buffers()
   local buffers = {}
   local current_bufnr, alternate_bufnr = fn.bufnr(), fn.bufnr('#')
   local last_timestamp, last_buffer
   for _, bufinfo in ipairs(fn.getbufinfo({buflisted = 1})) do
-    local buffer = {
-      bufnr = bufinfo.bufnr,
-      current = bufinfo.bufnr == current_bufnr,
-      alternate = bufinfo.bufnr == alternate_bufnr,
-      modifiable = fn.getbufvar(bufinfo.bufnr, '&modifiable') == 1,
-      modified = fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
-      readonly = fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
-      terminal = fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
-    }
-    if not last_timestamp or bufinfo.lastused > last_timestamp then
-      last_timestamp, last_buffer = bufinfo.lastused, buffer
+    if not is_excluded(bufinfo.bufnr) then
+      local buffer = {
+        bufnr = bufinfo.bufnr,
+        current = bufinfo.bufnr == current_bufnr,
+        alternate = bufinfo.bufnr == alternate_bufnr,
+        modifiable = fn.getbufvar(bufinfo.bufnr, '&modifiable') == 1,
+        modified = fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
+        readonly = fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
+        terminal = fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
+      }
+      if not last_timestamp or bufinfo.lastused > last_timestamp then
+        last_timestamp, last_buffer = bufinfo.lastused, buffer
+      end
+      table.insert(buffers, buffer)
     end
-    table.insert(buffers, buffer)
   end
-  if fn.buflisted(current_bufnr) == 0 then
+  if is_excluded(current_bufnr) then
     last_buffer.current = true
   end
   return buffers
