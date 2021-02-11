@@ -125,7 +125,7 @@ function M.build_bufferline()
   end
   separator = set_hlgroup(M.options.separator, 'separator', 'low')
   table.insert(bufferline, table.concat(buflist, separator))
-  spacer = set_hlgroup('%=%<', 'separator', 'low')
+  spacer = set_hlgroup('%<%=', 'separator', 'low')
   table.insert(bufferline, spacer)
   if M.options.counters then
     local counters = get_counters()
