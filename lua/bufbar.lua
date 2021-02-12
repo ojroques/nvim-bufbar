@@ -93,15 +93,17 @@ local function get_flags(buffer)
 end
 
 local function get_name(buffer)
-  local name
+  local name = '[No Name]'
   if M.options.show_bufname or buffer.current then
     local modifier = (buffer.terminal and ':t') or (M.options.modifier or ':t')
-    local bufname = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
     local flags = get_flags(buffer)
+    if fn.bufname(buffer.bufnr) ~= '' then
+      name = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
+    end
     if flags == '' then
-      name = fmt('%d: %s', buffer.bufnr, bufname)
+      name = fmt('%d: %s', buffer.bufnr, name)
     else
-      name = fmt('%d: %s %s', buffer.bufnr, bufname, flags)
+      name = fmt('%d: %s %s', buffer.bufnr, name, flags)
     end
   elseif M.options.show_alternate and buffer.alternate then
     name = fmt('%d (#)', buffer.bufnr)
