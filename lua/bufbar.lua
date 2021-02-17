@@ -9,12 +9,13 @@ local M = {}
 
 -------------------- OPTIONS -------------------------------
 M.options = {
-  theme = 'default',       -- the theme in 'lua/bufbar/themes' to use
-  counters = true,         -- show buffer counters (listed, modified, terminal)
-  show_bufname = false,    -- show buffer name instead of buffer number
-  show_alternate = false,  -- show alternate buffer
-  modifier = ':~:.',       -- the buffer name modifier
-  separator = '|',         -- the buffer separator
+  theme = 'default',         -- the theme in 'lua/bufbar/themes' to use
+  counters = true,           -- show buffer type counters
+  show_bufname = 'current',  -- show full buffer name
+  show_flags = true,         -- show buffer flags
+  show_alternate = false,    -- show alternate buffer
+  modifier = ':~:.',         -- the buffer name modifier
+  separator = '|',           -- the buffer separator
 }
 
 -------------------- HELPERS ----------------------------
@@ -51,6 +52,7 @@ local function get_buffers()
         modified = fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
         readonly = fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
         terminal = fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
+        visible = fn.bufwinnr(bufinfo.bufnr) > 0,
       }
       if not last_timestamp or bufinfo.lastused > last_timestamp then
         last_timestamp, last_buffer = bufinfo.lastused, buffer
@@ -93,17 +95,19 @@ local function get_flags(buffer)
 end
 
 local function get_name(buffer)
-  local name = '[No Name]'
-  if M.options.show_bufname or buffer.current then
+  local name, expand = '[No Name]', buffer.current
+  expand = expand or M.options.show_bufname == 'all'
+  expand = expand or M.options.show_bufname == 'visible' and buffer.visible
+  if expand then
     local modifier = (buffer.terminal and ':t') or (M.options.modifier or ':t')
     local flags = get_flags(buffer)
     if fn.bufname(buffer.bufnr) ~= '' then
       name = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
     end
-    if flags == '' then
-      name = fmt('%d: %s', buffer.bufnr, name)
-    else
+    if M.options.show_flags and flags ~= '' then
       name = fmt('%d: %s %s', buffer.bufnr, name, flags)
+    else
+      name = fmt('%d: %s', buffer.bufnr, name)
     end
   elseif M.options.show_alternate and buffer.alternate then
     name = fmt('%d (#)', buffer.bufnr)
