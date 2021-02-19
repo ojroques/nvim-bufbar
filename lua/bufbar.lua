@@ -14,7 +14,7 @@ M.options = {
   show_bufname = 'current',  -- show full buffer name
   show_flags = true,         -- show buffer flags
   show_alternate = false,    -- show alternate buffer
-  modifier = ':~:.',         -- the buffer name modifier
+  modifier = ':t',           -- the buffer name modifier
   separator = '|',           -- the buffer separator
 }
 
