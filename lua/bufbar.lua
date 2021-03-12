@@ -10,7 +10,7 @@ local M = {}
 -------------------- OPTIONS -------------------------------
 M.options = {
   theme = 'default',         -- the theme in 'lua/bufbar/themes' to use
-  counters = true,           -- show buffer type counters
+  show_tabs = true,          -- show tabs
   show_bufname = 'current',  -- show full buffer name
   show_flags = true,         -- show buffer flags
   show_alternate = false,    -- show alternate buffer
@@ -66,18 +66,17 @@ local function get_buffers()
   return buffers
 end
 
-local function get_counters()
-  local counters = {listed = 0, modified = 0, terminal = 0}
-  for _, bufinfo in ipairs(fn.getbufinfo({buflisted = 1})) do
-    counters.listed = counters.listed + 1
-    if fn.getbufvar(bufinfo.bufnr, '&modified') == 1 then
-      counters.modified = counters.modified + 1
-    end
-    if fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal' then
-      counters.terminal = counters.terminal + 1
-    end
+local function get_tabs()
+  local tabs = {}
+  local current_tab = fn.tabpagenr()
+  for _, tabinfo in ipairs(fn.gettabinfo()) do
+    local tab = {
+      tabnr = tabinfo.tabnr,
+      current = tabinfo.tabnr == current_tab,
+    }
+    table.insert(tabs, tab)
   end
-  return counters
+  return tabs
 end
 
 local function get_flags(buffer)
@@ -118,30 +117,29 @@ local function get_name(buffer)
 end
 
 function M.build_bufferline()
-  local buffers = get_buffers()
-  local bufferline, buflist = {}, {}
-  local separator, spacer
+  local separator = set_hlgroup(M.options.separator, 'separator', 'inactive')
+  local spacer = set_hlgroup('%<%=', 'separator', 'inactive')
+  local bufferline = {}
+  local buffers, buflist = get_buffers(), {}
   for _, buffer in ipairs(buffers) do
     local bufname = fmt(' %s ', get_name(buffer))
-    local class, level = 'listed', 'low'
+    local class, level = 'listed', 'inactive'
     class = buffer.modified and 'modified' or class
     class = buffer.terminal and 'terminal' or class
-    level = buffer.current and 'high' or level
+    level = buffer.current and 'active' or level
     table.insert(buflist, set_hlgroup(bufname, class, level))
   end
-  separator = set_hlgroup(M.options.separator, 'separator', 'low')
   table.insert(bufferline, table.concat(buflist, separator))
-  spacer = set_hlgroup('%<%=', 'separator', 'low')
   table.insert(bufferline, spacer)
-  if M.options.counters then
-    local counters = get_counters()
-    local bufcounters = {
-      set_hlgroup(fmt(' L:%d ', counters.listed), 'listed', 'med'),
-      set_hlgroup(fmt(' M:%d ', counters.modified), 'modified', 'med'),
-      set_hlgroup(fmt(' T:%d ', counters.terminal), 'terminal', 'med'),
-    }
-    separator = set_hlgroup(M.options.separator, 'separator', 'med')
-    table.insert(bufferline, table.concat(bufcounters, separator))
+  if M.options.show_tabs then
+    local tabs, tablist = get_tabs(), {}
+    for _, tab in ipairs(tabs) do
+      local tabname = fmt(' %d ', tab.tabnr)
+      local level = tab.current and 'active' or 'inactive'
+      table.insert(tablist, set_hlgroup(tabname, 'tabs', level))
+    end
+    table.insert(bufferline, set_hlgroup(' tabs: ', 'separator', 'active'))
+    table.insert(bufferline, table.concat(tablist, separator))
   end
   return table.concat(bufferline)
 end

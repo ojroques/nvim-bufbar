@@ -12,8 +12,7 @@ By default only the number of hidden buffers are displayed, see
 
 The plugin highlights buffers in different colors based on their type. With the
 default colorscheme, modified buffers are blue, unmodified ones are green and
-terminal buffers are red. Counters for each buffer type are shown in the top
-right corner.
+terminal buffers are red. Tabs are shown in the top right corner.
 
 ## Installation
 
@@ -44,7 +43,7 @@ with their default settings:
 ```lua
 M.options = {
   theme = 'default',         -- the theme in 'lua/bufbar/themes' to use
-  counters = true,           -- show buffer type counters ([L]isted, [M]odified, [T]erminal)
+  show_tabs = true,          -- show tabs
   show_bufname = 'current',  -- show full buffer name ('current', 'visible' or 'all')
   show_flags = true,         -- show buffer flags
   show_alternate = false,    -- show alternate buffer
