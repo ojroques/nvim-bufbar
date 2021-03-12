@@ -14,39 +14,27 @@ local colors = {
 
 return {
   separator = {
-    low = {
+    inactive = {
       guifg = colors.grey_comment.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.grey_comment.cterm,
       ctermbg = colors.grey_cursor.cterm,
     },
-    med = {
-      guifg = colors.grey_comment.gui,
-      guibg = colors.grey_menu.gui,
-      ctermfg = colors.grey_comment.cterm,
-      ctermbg = colors.grey_menu.cterm,
-    },
-    high = {
-      guifg = colors.grey_comment.gui,
-      guibg = colors.white.gui,
-      ctermfg = colors.grey_comment.cterm,
-      ctermbg = colors.white.cterm,
+    active = {
+      guifg = colors.grey_menu.gui,
+      guibg = colors.grey_cursor.gui,
+      ctermfg = colors.grey_menu.cterm,
+      ctermbg = colors.grey_cursor.cterm,
     },
   },
   listed = {
-    low = {
+    inactive = {
       guifg = colors.green.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.green.cterm,
       ctermbg = colors.grey_cursor.cterm,
     },
-    med = {
-      guifg = colors.green.gui,
-      guibg = colors.grey_menu.gui,
-      ctermfg = colors.green.cterm,
-      ctermbg = colors.grey_menu.cterm,
-    },
-    high = {
+    active = {
       guifg = colors.black.gui,
       guibg = colors.green.gui,
       ctermfg = colors.black.cterm,
@@ -54,19 +42,13 @@ return {
     },
   },
   modified = {
-    low = {
+    inactive = {
       guifg = colors.blue.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.blue.cterm,
       ctermbg = colors.grey_cursor.cterm,
     },
-    med = {
-      guifg = colors.blue.gui,
-      guibg = colors.grey_menu.gui,
-      ctermfg = colors.blue.cterm,
-      ctermbg = colors.grey_menu.cterm,
-    },
-    high = {
+    active = {
       guifg = colors.black.gui,
       guibg = colors.blue.gui,
       ctermfg = colors.black.cterm,
@@ -74,23 +56,31 @@ return {
     },
   },
   terminal = {
-    low = {
+    inactive = {
       guifg = colors.red.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.red.cterm,
       ctermbg = colors.grey_cursor.cterm,
     },
-    med = {
-      guifg = colors.red.gui,
-      guibg = colors.grey_menu.gui,
-      ctermfg = colors.red.cterm,
-      ctermbg = colors.grey_menu.cterm,
-    },
-    high = {
+    active = {
       guifg = colors.black.gui,
       guibg = colors.red.gui,
       ctermfg = colors.black.cterm,
       ctermbg = colors.red.cterm,
+    },
+  },
+  tabs = {
+    inactive = {
+      guifg = colors.white.gui,
+      guibg = colors.grey_cursor.gui,
+      ctermfg = colors.white.cterm,
+      ctermbg = colors.grey_cursor.cterm,
+    },
+    active = {
+      guifg = colors.black.gui,
+      guibg = colors.white.gui,
+      ctermfg = colors.black.cterm,
+      ctermbg = colors.white.cterm,
     },
   },
 }
