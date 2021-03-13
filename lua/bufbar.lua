@@ -19,12 +19,6 @@ M.options = {
 }
 
 -------------------- HELPERS ----------------------------
-local function echo(hlgroup, msg)
-  cmd(string.format('echohl %s', hlgroup))
-  cmd(string.format('echo "[hardline] %s"', msg))
-  cmd('echohl None')
-end
-
 local function set_hlgroup(text, class, level)
   local hlgroup = fmt('Bufbar_%s_%s', class, level)
   if fn.hlexists(hlgroup) == 0 then
@@ -117,8 +111,8 @@ local function get_name(buffer)
 end
 
 function M.build_bufferline()
-  local separator = set_hlgroup(M.options.separator, 'separator', 'inactive')
-  local spacer = set_hlgroup('%<%=', 'separator', 'inactive')
+  local separator = set_hlgroup(M.options.separator, 'separator', 'normal')
+  local spacer = set_hlgroup('%<%=', 'separator', 'normal')
   local bufferline = {}
   local buffers, buflist = get_buffers(), {}
   for _, buffer in ipairs(buffers) do
@@ -138,7 +132,7 @@ function M.build_bufferline()
       local level = tab.current and 'active' or 'inactive'
       table.insert(tablist, set_hlgroup(tabname, 'tabs', level))
     end
-    table.insert(bufferline, set_hlgroup(' tabs: ', 'separator', 'active'))
+    table.insert(bufferline, set_hlgroup(' tabs: ', 'separator', 'emphasized'))
     table.insert(bufferline, table.concat(tablist, separator))
   end
   return table.concat(bufferline)

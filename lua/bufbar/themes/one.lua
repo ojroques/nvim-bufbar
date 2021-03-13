@@ -14,13 +14,13 @@ local colors = {
 
 return {
   separator = {
-    inactive = {
+    normal = {
       guifg = colors.grey_comment.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.grey_comment.cterm,
       ctermbg = colors.grey_cursor.cterm,
     },
-    active = {
+    emphasized = {
       guifg = colors.grey_menu.gui,
       guibg = colors.grey_cursor.gui,
       ctermfg = colors.grey_menu.cterm,
