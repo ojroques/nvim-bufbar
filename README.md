@@ -15,15 +15,14 @@ default colorscheme, modified buffers are blue, unmodified ones are green and
 terminal buffers are red. Tabs are shown in the top right corner.
 
 ## Installation
-
-#### With Packer:
+With [packer.nvim](https://github.com/wbthomason/packer.nvim):
 ```lua
 use {'ojroques/nvim-bufbar'}
 ```
 
-#### With Plug
-```vim
-Plug 'ojroques/nvim-bufbar'
+With [paq-nvim](https://github.com/savq/paq-nvim):
+```lua
+paq {'ojroques/nvim-bufbar'}
 ```
 
 ## Usage
