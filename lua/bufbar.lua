@@ -54,7 +54,7 @@ local function get_buffers()
       table.insert(buffers, buffer)
     end
   end
-  if is_excluded(current_bufnr) then
+  if is_excluded(current_bufnr) and last_buffer then
     last_buffer.current = true
   end
   return buffers
