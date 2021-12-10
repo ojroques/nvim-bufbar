@@ -2,8 +2,8 @@
 
 A simple and very light bufferline for Neovim written in Lua.
 
-_**Note**: this plugin is mainly for my own use. I won't add new features/themes
-if I don't need them. Feel free to submit PRs or fork the plugin though._
+_**Note**: I won't add new features/themes if I don't need them. Feel free to
+submit PRs or fork the plugin though._
 
 ![preview](./preview.png)
 
