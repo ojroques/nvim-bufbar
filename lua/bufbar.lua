@@ -1,3 +1,4 @@
+-- nvim-bufbar
 -- By Olivier Roques
 -- github.com/ojroques
 
