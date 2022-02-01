@@ -46,7 +46,8 @@ M.options = {
   show_bufname = 'current',  -- show full buffer name ('current', 'visible' or 'all')
   show_flags = true,         -- show buffer flags
   show_alternate = false,    -- show alternate buffer
-  modifier = ':t',           -- the buffer name modifier
+  modifier = ':t',           -- the name modifier
+  term_modifier = ':t',      -- the name modifier for terminal buffers
   separator = '|',           -- the buffer separator
 }
 ```

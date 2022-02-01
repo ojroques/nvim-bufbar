@@ -15,7 +15,8 @@ M.options = {
   show_bufname = 'current',  -- show full buffer name
   show_flags = true,         -- show buffer flags
   show_alternate = false,    -- show alternate buffer
-  modifier = ':t',           -- the buffer name modifier
+  modifier = ':t',           -- the name modifier
+  term_modifier = ':t',      -- the name modifier for terminal buffers
   separator = '|',           -- the buffer separator
 }
 
@@ -93,7 +94,7 @@ local function get_name(buffer)
   expand = expand or M.options.show_bufname == 'all'
   expand = expand or M.options.show_bufname == 'visible' and buffer.visible
   if expand then
-    local modifier = (buffer.terminal and ':t') or (M.options.modifier or ':t')
+    local modifier = (buffer.terminal and M.options.term_modifier) or M.options.modifier
     local flags = get_flags(buffer)
     if fn.bufname(buffer.bufnr) ~= '' then
       name = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
