@@ -46,16 +46,19 @@ local function format_name(name, modifier, class, level)
   end
 
   local full = fn.fnamemodify(name, ':p')
+  local cwd = fn.fnamemodify(fn.getcwd(), ':p')
   local head, tail = '', ''
 
   if class == 'terminal' then
     head = 'term://'
-    local pattern = fmt('%s%s/', head, fn.fnamemodify(fn.getcwd(), ':p:~'))
-    tail = string.sub(full, #pattern + 1, -1)
+    tail = string.gsub(full, head, '')
   else
-    head = fn.fnamemodify(fn.getcwd(), ':p')
-    tail = fn.fnamemodify(full, fmt(':s?%s??', head))
-    head = fn.fnamemodify(head, ':~')
+    if string.find(full, cwd, 1, true) then
+      head = fn.fnamemodify(cwd, ':~')
+      tail = fn.fnamemodify(full, fmt(':s?%s??', cwd))
+    else
+      tail = fn.fnamemodify(full, ':~')
+    end
   end
 
   head = set_hlgroup(head, class, 'active_low')
@@ -202,8 +205,7 @@ local function set_theme()
     return
   end
 
-  local theme = fmt('bufbar.themes.%s', M.options.theme)
-  M.options.theme = require(theme)
+  M.options.theme = require(fmt('bufbar.themes.%s', M.options.theme))
 end
 
 local function set_hlgroups()
