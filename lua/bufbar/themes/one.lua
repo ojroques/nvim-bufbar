@@ -40,6 +40,12 @@ return {
       ctermfg = colors.black.cterm,
       ctermbg = colors.green.cterm,
     },
+    active_low = {
+      guifg = colors.grey_menu.gui,
+      guibg = colors.green.gui,
+      ctermfg = colors.grey_menu.cterm,
+      ctermbg = colors.green.cterm,
+    },
   },
   modified = {
     inactive = {
@@ -54,6 +60,12 @@ return {
       ctermfg = colors.black.cterm,
       ctermbg = colors.blue.cterm,
     },
+    active_low = {
+      guifg = colors.grey_menu.gui,
+      guibg = colors.blue.gui,
+      ctermfg = colors.grey_menu.cterm,
+      ctermbg = colors.blue.cterm,
+    },
   },
   terminal = {
     inactive = {
@@ -66,6 +78,12 @@ return {
       guifg = colors.black.gui,
       guibg = colors.red.gui,
       ctermfg = colors.black.cterm,
+      ctermbg = colors.red.cterm,
+    },
+    active_low = {
+      guifg = colors.grey_menu.gui,
+      guibg = colors.red.gui,
+      ctermfg = colors.grey_menu.cterm,
       ctermbg = colors.red.cterm,
     },
   },

@@ -36,6 +36,34 @@ local function is_excluded(bufnr)
   return fn.buflisted(bufnr) == 0 or fn.getbufvar(bufnr, '&filetype') == 'qf'
 end
 
+local function format_name(name, modifier, class, level)
+  if name == '' then
+    return set_hlgroup('[No Name]', class, level)
+  end
+
+  if modifier ~= 'full' or level ~= 'active' then
+    return set_hlgroup(fn.fnamemodify(name, modifier), class, level)
+  end
+
+  local full = fn.fnamemodify(name, ':p')
+  local head, tail = '', ''
+
+  if class == 'terminal' then
+    head = 'term://'
+    local pattern = fmt('%s%s/', head, fn.fnamemodify(fn.getcwd(), ':p:~'))
+    tail = string.sub(full, #pattern + 1, -1)
+  else
+    head = fn.fnamemodify(fn.getcwd(), ':p')
+    tail = fn.fnamemodify(full, fmt(':s?%s??', head))
+    head = fn.fnamemodify(head, ':~')
+  end
+
+  head = set_hlgroup(head, class, 'active_low')
+  tail = set_hlgroup(tail, class, 'active')
+
+  return fmt('%s%s', head, tail)
+end
+
 local function get_buffers()
   local buffers = {}
   local current_bufnr, alternate_bufnr = fn.bufnr(), fn.bufnr('#')
@@ -104,31 +132,38 @@ local function get_flags(buffer)
 end
 
 local function get_name(buffer)
-  local name, expand = '[No Name]', buffer.current
+  local class, level = 'listed', 'inactive'
+  local name, expand = '', buffer.current
+
+  class = buffer.modified and 'modified' or class
+  class = buffer.terminal and 'terminal' or class
+  level = buffer.current and 'active' or level
 
   expand = expand or M.options.show_bufname == 'all'
   expand = expand or M.options.show_bufname == 'visible' and buffer.visible
 
-  if expand then
-    local modifier = (buffer.terminal and M.options.term_modifier) or M.options.modifier
-    local flags = get_flags(buffer)
-
-    if fn.bufname(buffer.bufnr) ~= '' then
-      name = fn.fnamemodify(fn.bufname(buffer.bufnr), modifier)
-    end
-
-    if M.options.show_flags and flags ~= '' then
-      name = fmt('%d: %s %s', buffer.bufnr, name, flags)
+  if not expand then
+    if M.options.show_alternate and buffer.alternate then
+      name = fmt('%d (#)', buffer.bufnr)
     else
-      name = fmt('%d: %s', buffer.bufnr, name)
+      name = fmt('%d', buffer.bufnr)
     end
-  elseif M.options.show_alternate and buffer.alternate then
-    name = fmt('%d (#)', buffer.bufnr)
-  else
-    name = fmt('%d', buffer.bufnr)
+
+    return set_hlgroup(name, class, level)
   end
 
-  return name
+  local modifier = (buffer.terminal and M.options.term_modifier) or M.options.modifier
+  local prefix = set_hlgroup(fmt(' %d: ', buffer.bufnr), class, level)
+  local suffix = set_hlgroup(' ',  class, level)
+  local flags = get_flags(buffer)
+
+  name = format_name(fn.bufname(buffer.bufnr), modifier, class, level)
+
+  if M.options.show_flags and flags ~= '' then
+    suffix = set_hlgroup(fmt(' %s ', flags), class, level)
+  end
+
+  return fmt('%s%s%s', prefix, name, suffix)
 end
 
 function M.build_bufferline()
@@ -138,14 +173,7 @@ function M.build_bufferline()
   local buffers, buflist = get_buffers(), {}
 
   for _, buffer in ipairs(buffers) do
-    local bufname = fmt(' %s ', get_name(buffer))
-    local class, level = 'listed', 'inactive'
-
-    class = buffer.modified and 'modified' or class
-    class = buffer.terminal and 'terminal' or class
-    level = buffer.current and 'active' or level
-
-    table.insert(buflist, set_hlgroup(bufname, class, level))
+    table.insert(buflist, get_name(buffer))
   end
 
   table.insert(bufferline, table.concat(buflist, separator))
@@ -155,10 +183,10 @@ function M.build_bufferline()
     local tabs, tablist = get_tabs(), {}
 
     for _, tab in ipairs(tabs) do
-      local tabname = fmt(' %d ', tab.tabnr)
       local level = tab.current and 'active' or 'inactive'
+      local tabname = set_hlgroup(fmt(' %d ', tab.tabnr), 'tabs', level)
 
-      table.insert(tablist, set_hlgroup(tabname, 'tabs', level))
+      table.insert(tablist, tabname)
     end
 
     table.insert(bufferline, set_hlgroup(' tabs: ', 'separator', 'emphasized'))
