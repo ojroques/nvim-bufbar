@@ -95,10 +95,10 @@ return {
       ctermbg = colors.grey_cursor.cterm,
     },
     active = {
-      guifg = colors.black.gui,
-      guibg = colors.white.gui,
-      ctermfg = colors.black.cterm,
-      ctermbg = colors.white.cterm,
+      guifg = colors.white.gui,
+      guibg = colors.grey_comment.gui,
+      ctermfg = colors.white.cterm,
+      ctermbg = colors.grey_comment.cterm,
     },
   },
 }
