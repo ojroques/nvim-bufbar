@@ -11,6 +11,7 @@ local M = {}
 -------------------- OPTIONS -------------------------------
 M.options = {
   theme = 'default',         -- the theme in 'lua/bufbar/themes' to use
+  position = 'top',          -- top for tab bar, bottom for status bar
   show_tabs = true,          -- show tabs
   show_bufname = 'current',  -- show full buffer name
   show_flags = true,         -- show buffer flags
@@ -224,8 +225,14 @@ local function set_hlgroups()
 end
 
 local function set_bufferline()
-  o.showtabline = 2
-  o.tabline = [[%!luaeval('require("bufbar").build_bufferline()')]]
+  if M.options.position == 'bottom' then
+    o.laststatus = 2
+    o.statusline = [[%!luaeval('require("bufbar").build_bufferline()')]]
+  else
+    o.showtabline = 2
+    o.tabline = [[%!luaeval('require("bufbar").build_bufferline()')]]
+  end
+  
 end
 
 function M.setup(user_options)
