@@ -2,12 +2,12 @@
 
 A simple and very light bufferline for Neovim.
 
-_**Note**: I won't add new features/themes if I don't need them. Feel free to submit PRs or fork
-the plugin though._
+_**Note**: I won't add new features/themes I don't need. Feel free to submit PRs or fork the plugin
+though._
 
 ![screenshot](https://user-images.githubusercontent.com/23409060/188606068-d2ec6002-7aca-4241-bfcc-84b1cda9c4c6.png)
 
-By default only the number of hidden buffers are displayed, see [configuration](#configuration) to
+By default only the indices of hidden buffers are displayed, see [configuration](#configuration) to
 show their name instead.
 
 The plugin highlights buffers in different colors based on their type. With the default

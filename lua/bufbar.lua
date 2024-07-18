@@ -3,9 +3,6 @@
 -- github.com/ojroques
 
 -------------------- VARIABLES -----------------------------
-local fn, cmd, vim = vim.fn, vim.cmd, vim
-local o = vim.o
-local fmt = string.format
 local M = {}
 
 -------------------- OPTIONS -------------------------------
@@ -23,18 +20,18 @@ M.options = {
 
 -------------------- HELPERS ----------------------------
 local function set_hlgroup(text, class, level)
-  local hlgroup = fmt('Bufbar_%s_%s', class, level)
+  local hlgroup = string.format('Bufbar_%s_%s', class, level)
 
-  if fn.hlexists(hlgroup) == 0 then
+  if vim.fn.hlexists(hlgroup) == 0 then
     return text
   end
 
-  return fmt('%%#%s#%s%%*', hlgroup, text)
+  return string.format('%%#%s#%s%%*', hlgroup, text)
 end
 
 -------------------- BUFFERLINE ------------------------
 local function is_excluded(bufnr)
-  return fn.buflisted(bufnr) == 0 or fn.getbufvar(bufnr, '&filetype') == 'qf'
+  return vim.fn.buflisted(bufnr) == 0 or vim.fn.getbufvar(bufnr, '&filetype') == 'qf'
 end
 
 local function format_name(name, modifier, class, level)
@@ -43,11 +40,11 @@ local function format_name(name, modifier, class, level)
   end
 
   if modifier ~= 'full' or level ~= 'active' then
-    return set_hlgroup(fn.fnamemodify(name, modifier), class, level)
+    return set_hlgroup(vim.fn.fnamemodify(name, modifier), class, level)
   end
 
-  local full = fn.fnamemodify(name, ':p')
-  local cwd = fn.fnamemodify(fn.getcwd(), ':p')
+  local full = vim.fn.fnamemodify(name, ':p')
+  local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ':p')
   local head, tail = '', ''
 
   if class == 'terminal' then
@@ -55,35 +52,35 @@ local function format_name(name, modifier, class, level)
     tail = string.gsub(full, head, '')
   else
     if string.find(full, cwd, 1, true) then
-      head = fn.fnamemodify(cwd, ':~')
-      tail = fn.fnamemodify(full, fmt(':s?%s??', cwd))
+      head = vim.fn.fnamemodify(cwd, ':~')
+      tail = vim.fn.fnamemodify(full, string.format(':s?%s??', cwd))
     else
-      tail = fn.fnamemodify(full, ':~')
+      tail = vim.fn.fnamemodify(full, ':~')
     end
   end
 
   head = set_hlgroup(head, class, 'active_low')
   tail = set_hlgroup(tail, class, 'active')
 
-  return fmt('%s%s', head, tail)
+  return string.format('%s%s', head, tail)
 end
 
 local function get_buffers()
   local buffers = {}
-  local current_bufnr, alternate_bufnr = fn.bufnr(), fn.bufnr('#')
+  local current_bufnr, alternate_bufnr = vim.fn.bufnr(), vim.fn.bufnr('#')
   local last_timestamp, last_buffer
 
-  for _, bufinfo in ipairs(fn.getbufinfo({buflisted = 1})) do
+  for _, bufinfo in ipairs(vim.fn.getbufinfo({buflisted = 1})) do
     if not is_excluded(bufinfo.bufnr) then
       local buffer = {
         bufnr = bufinfo.bufnr,
         current = bufinfo.bufnr == current_bufnr,
         alternate = bufinfo.bufnr == alternate_bufnr,
-        modifiable = fn.getbufvar(bufinfo.bufnr, '&modifiable') == 1,
-        modified = fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
-        readonly = fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
-        terminal = fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
-        visible = fn.bufwinnr(bufinfo.bufnr) > 0,
+        modifiable = vim.fn.getbufvar(bufinfo.bufnr, '&modifiable') == 1,
+        modified = vim.fn.getbufvar(bufinfo.bufnr, '&modified') == 1,
+        readonly = vim.fn.getbufvar(bufinfo.bufnr, '&readonly') == 1,
+        terminal = vim.fn.getbufvar(bufinfo.bufnr, '&buftype') == 'terminal',
+        visible = vim.fn.bufwinnr(bufinfo.bufnr) > 0,
       }
 
       if not last_timestamp or bufinfo.lastused > last_timestamp then
@@ -103,9 +100,9 @@ end
 
 local function get_tabs()
   local tabs = {}
-  local current_tab = fn.tabpagenr()
+  local current_tab = vim.fn.tabpagenr()
 
-  for _, tabinfo in ipairs(fn.gettabinfo()) do
+  for _, tabinfo in ipairs(vim.fn.gettabinfo()) do
     local tab = {
       tabnr = tabinfo.tabnr,
       current = tabinfo.tabnr == current_tab,
@@ -148,26 +145,26 @@ local function get_name(buffer)
 
   if not expand then
     if M.options.show_alternate and buffer.alternate then
-      name = fmt('%d (#)', buffer.bufnr)
+      name = string.format('%d (#)', buffer.bufnr)
     else
-      name = fmt('%d', buffer.bufnr)
+      name = string.format('%d', buffer.bufnr)
     end
 
     return set_hlgroup(name, class, level)
   end
 
   local modifier = (buffer.terminal and M.options.term_modifier) or M.options.modifier
-  local prefix = set_hlgroup(fmt(' %d: ', buffer.bufnr), class, level)
+  local prefix = set_hlgroup(string.format(' %d: ', buffer.bufnr), class, level)
   local suffix = set_hlgroup(' ',  class, level)
   local flags = get_flags(buffer)
 
-  name = format_name(fn.bufname(buffer.bufnr), modifier, class, level)
+  name = format_name(vim.fn.bufname(buffer.bufnr), modifier, class, level)
 
   if M.options.show_flags and flags ~= '' then
-    suffix = set_hlgroup(fmt(' %s ', flags), class, level)
+    suffix = set_hlgroup(string.format(' %s ', flags), class, level)
   end
 
-  return fmt('%s%s%s', prefix, name, suffix)
+  return string.format('%s%s%s', prefix, name, suffix)
 end
 
 function M.build_bufferline()
@@ -188,7 +185,7 @@ function M.build_bufferline()
 
     for _, tab in ipairs(tabs) do
       local level = tab.current and 'active' or 'inactive'
-      local tabname = set_hlgroup(fmt(' %d ', tab.tabnr), 'tabs', level)
+      local tabname = set_hlgroup(string.format(' %d ', tab.tabnr), 'tabs', level)
 
       table.insert(tablist, tabname)
     end
@@ -206,33 +203,33 @@ local function set_theme()
     return
   end
 
-  M.options.theme = require(fmt('bufbar.themes.%s', M.options.theme))
+  M.options.theme = require(string.format('bufbar.themes.%s', M.options.theme))
 end
 
 local function set_hlgroups()
   for class, levels in pairs(M.options.theme) do
     for level, args in pairs(levels) do
-      local hlgroup, arg = fmt('Bufbar_%s_%s', class, level), {}
+      local hlgroup, arg = string.format('Bufbar_%s_%s', class, level), {}
 
       for k, v in pairs(args) do
-        table.insert(arg, fmt('%s=%s', k, v))
+        table.insert(arg, string.format('%s=%s', k, v))
       end
 
       arg = table.concat(arg, ' ')
-      cmd(fmt('autocmd VimEnter,ColorScheme * hi %s %s', hlgroup, arg))
+      vim.cmd(string.format('autocmd VimEnter,ColorScheme * hi %s %s', hlgroup, arg))
     end
   end
 end
 
 local function set_bufferline()
   if M.options.position == 'bottom' then
-    o.laststatus = 2
-    o.statusline = [[%!luaeval('require("bufbar").build_bufferline()')]]
+    vim.o.laststatus = 2
+    vim.o.statusline = [[%!luaeval('require("bufbar").build_bufferline()')]]
   else
-    o.showtabline = 2
-    o.tabline = [[%!luaeval('require("bufbar").build_bufferline()')]]
+    vim.o.showtabline = 2
+    vim.o.tabline = [[%!luaeval('require("bufbar").build_bufferline()')]]
   end
-  
+
 end
 
 function M.setup(user_options)
