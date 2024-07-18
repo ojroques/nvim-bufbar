@@ -1,29 +1,18 @@
 # nvim-bufbar
 
-A simple and very light bufferline for Neovim written in Lua.
+A simple and very light bufferline for Neovim.
 
-_**Note**: I won't add new features/themes if I don't need them. Feel free to
-submit PRs or fork the plugin though._
+_**Note**: I won't add new features/themes if I don't need them. Feel free to submit PRs or fork
+the plugin though._
 
 ![screenshot](https://user-images.githubusercontent.com/23409060/188606068-d2ec6002-7aca-4241-bfcc-84b1cda9c4c6.png)
 
-By default only the number of hidden buffers are displayed, see
-[configuration](#configuration) to show their name instead.
+By default only the number of hidden buffers are displayed, see [configuration](#configuration) to
+show their name instead.
 
-The plugin highlights buffers in different colors based on their type. With the
-default colorscheme, modified buffers are blue, unmodified ones are green and
-terminal buffers are red. Tabs are shown in the top right corner.
-
-## Installation
-With [packer.nvim](https://github.com/wbthomason/packer.nvim):
-```lua
-use {'ojroques/nvim-bufbar'}
-```
-
-With [paq-nvim](https://github.com/savq/paq-nvim):
-```lua
-paq {'ojroques/nvim-bufbar'}
-```
+The plugin highlights buffers in different colors based on their type. With the default
+colorscheme, modified buffers are blue, unmodified ones are green and terminal buffers are red.
+Tabs are shown in the top right corner.
 
 ## Usage
 In your *init.lua*:
@@ -31,14 +20,9 @@ In your *init.lua*:
 require('bufbar').setup {}
 ```
 
-If you're using a *.vimrc* or *init.vim*:
-```vim
-lua require('bufbar').setup {}
-```
-
 ## Configuration
-You can pass options to the `setup()` function. Here are all available options
-with their default settings:
+You can pass options to the `setup()` function. Here are all available options with their default
+settings:
 ```lua
 M.options = {
   theme = 'default',         -- the theme in 'lua/bufbar/themes' to use
@@ -51,6 +35,3 @@ M.options = {
   separator = '|',           -- the buffer separator
 }
 ```
-
-## License
-[LICENSE](./LICENSE)
